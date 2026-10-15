@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interesting Fruits</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti CDN for Level Up Explosion -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="h-full bg-animated flex flex-col items-center justify-center text-slate-800 relative select-none overflow-hidden">
+
+    <!-- CANVAS BACKGROUND (REACTIVE DUST & SWIPE TRAILS) -->
+    <canvas id="fx-canvas" class="fixed inset-0 pointer-events-none z-10 w-full h-full"></canvas>
+
+    <!-- FLOATING START MENU BACKGROUND FRUITS -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-25 z-0">
+        <div class="absolute top-8 left-8 text-6xl animate-float">🍎</div>
+        <div class="absolute top-1/4 right-10 text-7xl animate-float" style="animation-delay: 1s;">🍊</div>
+        <div class="absolute bottom-24 left-12 text-7xl animate-float" style="animation-delay: 2s;">🍇</div>
+        <div class="absolute bottom-12 right-12 text-6xl animate-float" style="animation-delay: 0.5s;">🍓</div>
+        <div class="absolute top-1/2 left-6 text-5xl animate-float" style="animation-delay: 1.5s;">🍋</div>
+        <div class="absolute top-1/3 right-1/4 text-6xl animate-float" style="animation-delay: 2.5s;">🍐</div>
+    </div>
+
+    <!-- MAIN APP CONTAINER -->
+    <div id="app" class="w-full h-full max-w-md flex flex-col relative z-20 p-4 justify-between">
+
+        <!-- ================= START SCREEN ================= -->
+        <div id="start-screen" class="flex flex-col items-center justify-between h-full py-8 text-center" style="display: flex;">
+            <div class="space-y-4 my-auto">
+                <div class="flex justify-center space-x-3 text-6xl mb-2">
+                    <span class="animate-bounce" style="animation-duration: 1.2s;">🍓</span>
+                    <span class="animate-bounce" style="animation-delay: 0.15s; animation-duration: 1.2s;">🍊</span>
+                    <span class="animate-bounce" style="animation-delay: 0.3s; animation-duration: 1.2s;">🍋</span>
+                </div>
+
+                <!-- Stylized Title with Fruit Rainbow Colors -->
+                <div class="leading-none space-y-1">
+                    <div class="text-4xl sm:text-5xl font-black tracking-wide">
+                        <span class="fruit-letter letter-red">I</span><span class="fruit-letter letter-orange">n</span><span class="fruit-letter letter-yellow">t</span><span class="fruit-letter letter-green">e</span><span class="fruit-letter letter-cyan">r</span><span class="fruit-letter letter-purple">e</span><span class="fruit-letter letter-pink">s</span><span class="fruit-letter letter-red">t</span><span class="fruit-letter letter-orange">i</span><span class="fruit-letter letter-yellow">n</span><span class="fruit-letter letter-green">g</span>
+                    </div>
+                    <div class="text-5xl sm:text-6xl font-black tracking-wider pt-2">
+                        <span class="fruit-letter letter-red">F</span><span class="fruit-letter letter-orange">r</span><span class="fruit-letter letter-yellow">u</span><span class="fruit-letter letter-green">i</span><span class="fruit-letter letter-cyan">t</span><span class="fruit-letter letter-purple">s</span>
+                    </div>
+                </div>
+                <p class="text-white font-extrabold text-sm pt-2 tracking-wide drop-shadow">Combine, Corte e Faça Combos Incríveis!</p>
+
+                <!-- High Score & Max Level Banner -->
+                <div class="flex space-x-3 justify-center mt-4">
+                    <div class="bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-orange-200/80 shadow-md">
+                        <span class="text-xs text-orange-900 font-extrabold uppercase tracking-wider block">Melhor Pontuação</span>
+                        <span id="best-score-display" class="text-2xl font-black text-orange-950 drop-shadow-sm">0</span>
+                    </div>
+                    <div class="bg-white/80 backdrop-blur-md px-4 py-2.5 rounded-2xl border border-orange-200/80 shadow-md">
+                        <span class="text-xs text-orange-900 font-extrabold uppercase tracking-wider block">Nível Máximo</span>
+                        <span id="best-level-display" class="text-2xl font-black text-orange-950 drop-shadow-sm">1</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Start Screen Buttons -->
+            <div class="w-full max-w-xs space-y-3 my-auto">
+                <button id="btn-start" class="w-full py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 hover:from-amber-500 hover:to-rose-600 font-black text-2xl text-white rounded-2xl shadow-xl hover:shadow-2xl transform active:scale-95 transition border-2 border-white flex items-center justify-center space-x-2 tracking-wide group relative overflow-hidden">
+                    <span class="absolute inset-0 bg-white/30 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                    <span>JOGAR</span>
+                </button>
+                <button id="btn-how-to-play" class="w-full py-3 bg-white/80 hover:bg-white text-orange-950 backdrop-blur-md font-bold text-lg rounded-2xl shadow-md transform active:scale-95 transition border border-orange-200 flex items-center justify-center space-x-2">
+                    <span>📖</span><span>Como Jogar</span>
+                </button>
+                <button id="btn-high-scores" class="w-full py-3 bg-white/80 hover:bg-white text-orange-950 backdrop-blur-md font-bold text-lg rounded-2xl shadow-md transform active:scale-95 transition border border-orange-200 flex items-center justify-center space-x-2">
+                    <span>🏆</span><span>Recordes</span>
+                </button>
+            </div>
+
+            <!-- Audio Toggle -->
+            <div class="flex items-center space-x-3 bg-white/80 backdrop-blur-md px-4 py-2 rounded-full border border-orange-200 shadow-md">
+                <span class="text-sm font-bold text-orange-950">Efeitos de Som</span>
+                <button id="sound-toggle-btn" class="w-12 h-6 bg-emerald-500 rounded-full relative transition p-1 shadow-inner">
+                    <div id="sound-toggle-thumb" class="w-4 h-4 bg-white rounded-full transition transform translate-x-6 shadow"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= GAME SCREEN ================= -->
+        <div id="game-screen" class="flex flex-col h-full justify-between py-1" style="display: none;">
+            
+            <!-- Glassmorphism HUD Header -->
+            <div class="w-full bg-white/80 backdrop-blur-md p-3 rounded-2xl border border-orange-200/80 shadow-lg space-y-2">
+                <!-- Top Info Bar -->
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-gradient-to-r from-orange-500 to-rose-500 text-white px-2.5 py-1 rounded-xl text-xs font-black uppercase tracking-wider shadow">
+                            NÍVEL <span id="level-display">1</span>
+                        </span>
+                        <span id="score-display" class="text-xl font-black text-orange-950 drop-shadow-sm">0</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <span id="xp-text" class="text-xs text-orange-900 font-bold">XP: 0 / 180</span>
+                        <button id="btn-pause" class="p-1.5 bg-orange-100 hover:bg-orange-200 text-orange-950 rounded-xl transition active:scale-95 border border-orange-300 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- XP Bar -->
+                <div class="space-y-0.5">
+                    <div class="flex justify-between items-center text-[10px] font-bold text-orange-900 uppercase tracking-wider">
+                        <span>⚡ Progresso de XP</span>
+                        <span id="xp-percent-text">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-orange-100/80 rounded-full overflow-hidden p-0.5 border border-orange-200/80 relative shadow-inner">
+                        <div id="xp-bar" class="h-full bg-gradient-to-r from-sky-400 via-amber-400 to-emerald-400 rounded-full transition-all duration-300 ease-out shadow" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Time Decay Bar -->
+                <div class="space-y-0.5">
+                    <div class="flex justify-between items-center text-[10px] font-bold text-orange-900 uppercase tracking-wider">
+                        <span>⏰ Tempo Restante</span>
+                        <span id="time-percent-text">100%</span>
+                    </div>
+                    <div class="w-full h-3.5 bg-orange-100/80 rounded-full overflow-hidden p-0.5 border border-orange-200/80 relative shadow-inner">
+                        <div id="time-bar" class="h-full bg-gradient-to-r from-emerald-400 via-amber-400 to-rose-500 rounded-full transition-all duration-150 ease-linear shadow" style="width: 100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Feedback Banner -->
+            <div id="feedback-banner" class="h-7 flex items-center justify-center text-white font-black text-base tracking-wide drop-shadow transition-all duration-300 opacity-0 transform scale-90">
+                Corte Suculento! ⚔️
+            </div>
+
+            <!-- Game Board Container (6x6 Grid) -->
+            <div id="board-container" class="relative flex items-center justify-center my-auto w-full">
+                <div id="fruit-grid" class="grid grid-cols-6 gap-1.5 p-3 bg-white/70 backdrop-blur-md rounded-3xl border-2 border-orange-200/80 shadow-2xl w-full max-w-[360px] aspect-square relative touch-none">
+                    <!-- Dynamically populated fruit cells -->
+                </div>
+
+                <!-- Level Up Popup Overlay -->
+                <div id="level-up-overlay" class="absolute inset-0 flex flex-col items-center justify-center z-40 pointer-events-none" style="display: none;">
+                    <div class="level-up-pop bg-gradient-to-r from-amber-400 via-orange-500 to-rose-500 px-7 py-5 rounded-3xl border-4 border-white shadow-2xl text-center text-white">
+                        <span class="text-3xl font-black block drop-shadow">SUBIU DE NÍVEL! 🚀</span>
+                        <span id="level-up-subtitle" class="text-sm font-bold mt-1 block drop-shadow-sm">Velocidade Aumentada!</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Tip -->
+            <div class="text-center text-xs text-white font-extrabold py-1 drop-shadow">
+                ⚡ Combine 4 ou 5 frutas para criar Bombas Laser e Arco-Íris!
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= MODALS & OVERLAYS ================= -->
+
+    <!-- How to Play Modal -->
+    <div id="how-to-play-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white/95 text-slate-800 w-full max-w-sm rounded-3xl p-6 border-2 border-orange-200 shadow-2xl space-y-4 text-center">
+            <h2 class="text-2xl font-black text-orange-950">Como Jogar 📖</h2>
+            <div class="text-xs space-y-2.5 text-orange-950 text-left bg-orange-50/80 p-4 rounded-2xl border border-orange-200/80">
+                <p>👆 <strong>Arraste e Deslize:</strong> Toque/clique e arraste uma fruta até uma célula adjacente para trocá-las.</p>
+                <p>⚔️ <strong>Corte e Combine:</strong> Alinhe 3 ou mais frutas iguais para cortá-las ao meio com efeitos suculentos!</p>
+                <p> <strong>Frutas Especiais:</strong><br>• Combinação de 4 = ⚡ Bomba Laser (Limpa a linha ou coluna inteira)<br>• Combinação de 5 = 🌈 Bomba Arco-Íris (Limpa todas as frutas de uma cor)</p>
+                <p>⏰ <strong>Ritmo Tranquilo:</strong> O tempo consome devagar no Nível 1 e vai acelerando conforme você sobe de nível!</p>
+            </div>
+            <button id="btn-close-how-to" class="w-full py-3 bg-gradient-to-r from-orange-400 to-rose-500 hover:from-orange-500 hover:to-rose-600 text-white font-black text-lg rounded-2xl shadow-lg transition active:scale-95">
+                Entendi!
+            </button>
+        </div>
+    </div>
+
+    <!-- High Scores Modal -->
+    <div id="high-scores-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white/95 text-slate-800 w-full max-w-sm rounded-3xl p-6 border-2 border-orange-200 shadow-2xl space-y-4 text-center">
+            <h2 class="text-2xl font-black text-orange-950">Recordes 🏆</h2>
+            <div id="high-scores-list" class="space-y-2 bg-orange-50/80 p-4 rounded-2xl max-h-48 overflow-y-auto text-sm border border-orange-200/80">
+                <!-- Populated via JS -->
+            </div>
+            <button id="btn-close-scores" class="w-full py-3 bg-gradient-to-r from-orange-400 to-rose-500 hover:from-orange-500 hover:to-rose-600 text-white font-black text-lg rounded-2xl shadow-lg transition active:scale-95">
+                Fechar
+            </button>
+        </div>
+    </div>
+
+    <!-- Pause Modal -->
+    <div id="pause-modal" class="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white/95 text-slate-800 w-full max-w-xs rounded-3xl p-6 border-2 border-orange-200 shadow-2xl space-y-3 text-center">
+            <h2 class="text-2xl font-black text-orange-950 mb-2">Jogo Pausado ⏸️</h2>
+            <button id="btn-resume" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-2xl shadow-lg transition active:scale-95">
+                Continuar
+            </button>
+            <button id="btn-restart-pause" class="w-full py-3 bg-orange-100 hover:bg-orange-200 text-orange-950 font-black text-lg rounded-2xl shadow-md transition active:scale-95 border border-orange-300">
+                Reiniciar
+            </button>
+            <button id="btn-menu-pause" class="w-full py-3 bg-rose-500 hover:bg-rose-600 text-white font-black text-lg rounded-2xl shadow-lg transition active:scale-95">
+                Menu Principal
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+        <div class="bg-white/95 text-slate-800 w-full max-w-sm rounded-3xl p-6 border-2 border-orange-200 shadow-2xl space-y-4 text-center">
+            <h2 class="text-3xl font-black text-orange-950">Fim de Jogo! ⏰</h2>
+            <div class="bg-orange-50/80 p-4 rounded-2xl space-y-2 border border-orange-200/80">
+                <div class="flex justify-between items-center text-sm border-b border-orange-200 pb-2">
+                    <span class="text-orange-900 font-bold">Nível Alcançado</span>
+                    <span id="game-over-level" class="text-xl font-black text-orange-950">1</span>
+                </div>
+                <div class="flex justify-between items-center text-sm pt-1">
+                    <span class="text-orange-900 font-bold">Pontuação Final</span>
+                    <span id="final-score" class="text-2xl font-black text-orange-950">0</span>
+                </div>
+            </div>
+            <div class="space-y-2 pt-2">
+                <button id="btn-restart-over" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-2xl shadow-lg transition active:scale-95">
+                    Jogar Novamente
+                </button>
+                <button id="btn-menu-over" class="w-full py-3 bg-orange-100 hover:bg-orange-200 text-orange-950 font-black text-lg rounded-2xl shadow-md transition active:scale-95 border border-orange-300">
+                    Menu Principal
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT GAME LOGIC ================= -->
+    <script src="script.js"></script>
+</body>
+</html>
